@@ -3,6 +3,15 @@
 This file travels with the repo so any machine that clones/pulls picks up where we left off.
 (Private per-machine memory lives in `~/.claude/...` and is NOT synced — keep durable context here.)
 
+## Instructions for Claude (this repo only)
+- **Keep this file current.** Whenever work meaningfully changes the project state — a tool
+  installed, a workflow added, the "Next step" reached — update the relevant section below
+  (especially **State** and **Next step**) in the same session, before wrapping up.
+- **Keep it pushed.** After updating `CLAUDE.md`, commit and `git push origin main` so other
+  PCs stay in sync via `pull`. Don't leave context changes sitting uncommitted.
+- Record only durable, cross-PC-relevant context here; leave machine-local or throwaway
+  details out (those belong in private `~/.claude` memory).
+
 ## What we're doing
 Practicing / learning **GitHub Actions**. Plan: author workflows under `.github/workflows/` and
 run them **locally with [`act`](https://github.com/nektos/act)** (and the "GitHub Local Actions"
