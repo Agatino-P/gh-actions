@@ -24,6 +24,29 @@ VS Code extension) before/instead of pushing. Docker Desktop provides the runner
 - "GitHub Local Actions" VS Code extension.
 - Docker Desktop (WSL2) as the runner backend — must be running for `act`.
 
+## New-machine setup — what to install (e.g. when on the Mac)
+When I'm on a fresh machine (the Mac), install this exact set so the repo is runnable —
+nothing here syncs via git, it's all per-machine:
+- **Docker Desktop** — the runner backend; must be running for `act`.
+- **`act`** (nektos/act) — runs the workflows locally.
+- **`gh`** — GitHub CLI.
+- **`jq`** — JSON tooling.
+- VS Code extension **"GitHub Local Actions"**.
+- Recreate **`~/.actrc`** pinning the medium image (see Toolchain section for the exact lines).
+
+macOS (Homebrew):
+```bash
+brew install --cask docker          # Docker Desktop (then launch it once)
+brew install act gh jq
+printf '%s\n' \
+  '-P ubuntu-latest=catthehacker/ubuntu:act-latest' \
+  '-P ubuntu-24.04=catthehacker/ubuntu:act-latest' \
+  '-P ubuntu-22.04=catthehacker/ubuntu:act-latest' \
+  '-P ubuntu-20.04=catthehacker/ubuntu:act-latest' > ~/.actrc
+```
+Windows (winget), for reference — already done on the original PC:
+`winget install nektos.act GitHub.cli jqlang.jq` + Docker Desktop + `~/.actrc`.
+
 ## State as of 2026-06-13 (verified in a fresh shell)
 - ✅ `act` v0.2.89, `gh` v2.94.0, `jq` v1.8.1 installed (winget)
 - ✅ Docker Desktop v29.5.3 (WSL2), Git installed, GitHub connected
