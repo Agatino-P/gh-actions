@@ -50,8 +50,10 @@ Windows (winget), for reference — already done on the original PC:
 ## State as of 2026-06-14 (Mac, verified in a fresh shell)
 - ✅ Windows PC: `act` v0.2.89, `gh` v2.94.0, `jq` v1.8.1 (winget), Docker Desktop v29.5.3 (WSL2), `~/.actrc`
 - ✅ **Mac**: `act` v0.2.89 (brew), `gh` v2.93.0 (brew), `jq` 1.7.1 (Apple system build at `/usr/bin/jq`),
-  Docker Desktop v29.5.3 (daemon running), `~/.actrc` recreated. VS Code "GitHub Local Actions" ext not verified
-  (no `code` CLI on PATH — check via the Extensions panel).
+  Docker Desktop v29.5.3 (daemon running), `~/.actrc` recreated. `code` CLI IS on PATH (`/usr/local/bin/code`).
+  VS Code **"GitHub Local Actions" (`sanjulaganepola.github-local-actions`) v1.2.5 installed** on the Mac.
+  (Also present: GitHub's official `github.vscode-github-actions` v0.32.0 — that one is YAML editing + viewing
+  runs on GitHub.com, NOT local `act` execution; don't confuse the two.)
 - ✅ **First workflow written & runs green locally**: `.github/workflows/hello.yml` — push-triggered `hello`
   job, ran via `act` on the Mac (success).
 - ⚠️ **Mac-only `~/.actrc` line**: appended `--container-architecture linux/amd64` so plain `act` works on
@@ -63,12 +65,26 @@ Windows (winget), for reference — already done on the original PC:
   `github.*` context from local sources (e.g. `github.repository` from the `origin` git remote), so values
   can drift from real GitHub; `act` exits non-zero on job failure. `act -v` = verbose firehose, grep it for
   a specific mystery value rather than reading top-to-bottom.
+- ✅ **Shell-diving / container lifecycle learned:** `act` default = remove container on **success**, KEEP it on
+  **failure** (a failed run leaves a debuggable container behind). `-r/--reuse` = keep on success too AND reuse
+  it next run (state persists — handy but can mask bugs, so do a final clean run without `-r`). `--rm` = remove
+  even on failure. Inspect with `docker exec -it <id|name> bash`. Cleanup leftovers:
+  `docker ps -aq --filter "name=act-" | xargs docker rm -f`.
+- ✅ **"GitHub Local Actions" extension evaluated:** it's a **GUI wrapper around the same `act` engine** — it
+  literally builds an `act ...` command and shows it. Real wins: COMPONENTS health-check (act + Docker green),
+  one-click run from a WORKFLOWS tree, persisted run HISTORY (status + per-step timing tree; logs saved to
+  `~/Library/Application Support/Code/User/globalStorage/sanjulaganepola.github-local-actions/*.log`), and
+  SETTINGS param forms (Secrets/Variables/Inputs/Payloads/Runners/Options) that auto-detect references and feed
+  values in (secrets passed as `--secret NAME`, value out-of-band via env so it's not in the visible command).
+  It silently honors `~/.actrc` too. Limits: NOT a different engine; clicking a HISTORY step does NOT navigate
+  the log (flat scroll). Verdict: not essential, but history + set-params-once are nice.
 
 ## Next step (resume here)
-Hello workflow + `act` debugging basics done. The `Break on purpose` step was added to learn failure-reading
-and then reverted, so `hello.yml` is back to green. Options to continue learning:
-- **Debugging deeper** (next in the teaching thread): get a shell *inside* the runner container to poke the
-  live environment; `continue-on-error` / `if:` to control what a failure does; targeted `act -v` grepping.
+Hello workflow + full `act` debugging toolkit done (list/dryrun/run/read-failure/exit-codes/verbose/shell-dive
++ container lifecycle), and the "GitHub Local Actions" VS Code extension evaluated. Practice steps
+(`Break on purpose`, `Use a secret`) were added to learn and then reverted — `hello.yml` is back to green.
+Options to continue learning:
+- `continue-on-error` / `if:` conditions to control what a failure does (started but not yet practiced).
 - Add more triggers (`workflow_dispatch`, `pull_request`, `schedule`) to a workflow.
 - Try a matrix build, job dependencies (`needs:`), or a marketplace action (e.g. `actions/checkout`).
 - Pass inputs/secrets to `act` (`-s`, `--input`, `--var`, event payload via `-e event.json`).
