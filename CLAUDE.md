@@ -54,9 +54,21 @@ Windows (winget), for reference — already done on the original PC:
   (no `code` CLI on PATH — check via the Extensions panel).
 - ✅ **First workflow written & runs green locally**: `.github/workflows/hello.yml` — push-triggered `hello`
   job, ran via `act` on the Mac (success).
+- ⚠️ **Mac-only `~/.actrc` line**: appended `--container-architecture linux/amd64` so plain `act` works on
+  Apple Silicon without passing the flag each time. This line is **Mac-specific** — do NOT copy it to the
+  Windows PC's `~/.actrc` (Windows runs amd64 natively).
+- ✅ **Debugging basics covered (teaching session 2026-06-14):** `act -l` (list/parse), `act -n` (dryrun),
+  real run, and reading a deliberate failure. Key facts learned: steps run under `bash -e` (any non-zero
+  command aborts the step); `|`-prefixed log lines = output from inside the container; `act` derives the
+  `github.*` context from local sources (e.g. `github.repository` from the `origin` git remote), so values
+  can drift from real GitHub; `act` exits non-zero on job failure. `act -v` = verbose firehose, grep it for
+  a specific mystery value rather than reading top-to-bottom.
 
 ## Next step (resume here)
-First hello workflow is done. Options to continue learning:
+Hello workflow + `act` debugging basics done. The `Break on purpose` step was added to learn failure-reading
+and then reverted, so `hello.yml` is back to green. Options to continue learning:
+- **Debugging deeper** (next in the teaching thread): get a shell *inside* the runner container to poke the
+  live environment; `continue-on-error` / `if:` to control what a failure does; targeted `act -v` grepping.
 - Add more triggers (`workflow_dispatch`, `pull_request`, `schedule`) to a workflow.
 - Try a matrix build, job dependencies (`needs:`), or a marketplace action (e.g. `actions/checkout`).
 - Pass inputs/secrets to `act` (`-s`, `--input`, `--var`, event payload via `-e event.json`).
@@ -75,4 +87,8 @@ act -j <job-id>   # run a specific job
   in Bash while being on the Windows PATH — verify with PowerShell `Get-Command <tool>`.
 - On a new PC, the `act`/`gh`/`jq` installs and `~/.actrc` won't exist until you set them up.
 - **Apple Silicon (Mac):** `act` warns about missing container architecture and amd64-only images can
-  misbehave — run with `act --container-architecture linux/amd64` (the `hello` job was run this way).
+  misbehave — needs `--container-architecture linux/amd64`. On this Mac that flag now lives in `~/.actrc`,
+  so plain `act` already includes it (no need to pass it per-command). New Macs: add that line to `~/.actrc`.
+- **zsh word-splitting:** unlike bash, zsh does NOT split an unquoted `$var` on spaces — `act -l $dr` sends
+  the whole string as one arg (`unknown flag: --container-architecture linux/amd64`). Use `${=dr}` to force
+  splitting, or an array `dr=(--container-architecture linux/amd64)`. Better: put recurring flags in `~/.actrc`.
