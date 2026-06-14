@@ -1,0 +1,17 @@
+name: Hello
+
+on:
+  push:
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Greet
+        run: echo "Hello from GitHub Actions 👋"
+
+      - name: Show context
+        run: |
+          echo "Event:  ${{ github.event_name }}"
+          echo "Repo:   ${{ github.repository }}"
+          echo "Runner: ${{ runner.os }}"

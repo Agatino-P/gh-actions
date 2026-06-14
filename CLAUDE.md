@@ -47,16 +47,19 @@ printf '%s\n' \
 Windows (winget), for reference — already done on the original PC:
 `winget install nektos.act GitHub.cli jqlang.jq` + Docker Desktop + `~/.actrc`.
 
-## State as of 2026-06-13 (verified in a fresh shell)
-- ✅ `act` v0.2.89, `gh` v2.94.0, `jq` v1.8.1 installed (winget)
-- ✅ Docker Desktop v29.5.3 (WSL2), Git installed, GitHub connected
-- ✅ `~/.actrc` staged on the original PC
-- ❌ **No `.github/workflows/` yet** — zero workflows written. This is the frontier.
+## State as of 2026-06-14 (Mac, verified in a fresh shell)
+- ✅ Windows PC: `act` v0.2.89, `gh` v2.94.0, `jq` v1.8.1 (winget), Docker Desktop v29.5.3 (WSL2), `~/.actrc`
+- ✅ **Mac**: `act` v0.2.89 (brew), `gh` v2.93.0 (brew), `jq` 1.7.1 (Apple system build at `/usr/bin/jq`),
+  Docker Desktop v29.5.3 (daemon running), `~/.actrc` recreated. VS Code "GitHub Local Actions" ext not verified
+  (no `code` CLI on PATH — check via the Extensions panel).
+- ✅ **First workflow written & runs green locally**: `.github/workflows/hello.yml` — push-triggered `hello`
+  job, ran via `act` on the Mac (success).
 
 ## Next step (resume here)
-1. Create the first workflow in `.github/workflows/` (e.g. simple push-triggered hello job).
-2. Run locally: `act -l` to list, then `act` (default push event) or `act -j <job-id>`.
-   Docker Desktop must be running.
+First hello workflow is done. Options to continue learning:
+- Add more triggers (`workflow_dispatch`, `pull_request`, `schedule`) to a workflow.
+- Try a matrix build, job dependencies (`needs:`), or a marketplace action (e.g. `actions/checkout`).
+- Pass inputs/secrets to `act` (`-s`, `--input`, `--var`, event payload via `-e event.json`).
 
 ## Running a workflow locally
 ```bash
@@ -71,3 +74,5 @@ act -j <job-id>   # run a specific job
   shell from PowerShell, so a freshly installed Windows tool can show "command not found"
   in Bash while being on the Windows PATH — verify with PowerShell `Get-Command <tool>`.
 - On a new PC, the `act`/`gh`/`jq` installs and `~/.actrc` won't exist until you set them up.
+- **Apple Silicon (Mac):** `act` warns about missing container architecture and amd64-only images can
+  misbehave — run with `act --container-architecture linux/amd64` (the `hello` job was run this way).
