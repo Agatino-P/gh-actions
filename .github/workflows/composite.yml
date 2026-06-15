@@ -1,0 +1,16 @@
+name: Composite
+
+on:
+  push: 
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: retrieve
+        id: retrieve
+        uses:  ./.github/actions/sayhello
+
+      - name: Show said
+        run: |
+          echo "said: ${{ steps.retrieve.outputs.said}}"
