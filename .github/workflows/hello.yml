@@ -1,4 +1,4 @@
-name: Composite
+name: Hello
 
 on:
   push:
