@@ -1,0 +1,15 @@
+name: SayHello
+description: outputs lowercase hello to an output variable
+
+outputs:
+  said:
+    description: hello string
+    value: ${{ steps.mainstep.outputs.said  }}
+    
+runs: 
+  using: "composite"
+  steps: 
+    - id: mainstep
+      shell: bash
+      run: |
+        echo "said=hello" >> "$GITHUB_OUTPUT"
